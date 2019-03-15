@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @create: 2019-03-15 17:51
  */
 @Controller
-@RequestMapping("/my/test")
+@RequestMapping("/mytest")
 public class MyController {
 
     @RequestMapping("/getString")
