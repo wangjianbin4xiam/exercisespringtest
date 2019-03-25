@@ -1,6 +1,5 @@
-package com.dispatcher;
+package com.springmvcxml.dispatcher;
 
-import com.filter.MyFilter;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.DispatcherServlet;
 

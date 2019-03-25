@@ -10,7 +10,7 @@
     <param-value>classpath*:spring-ioc.xml</param-value>
   </context-param>
   <listener>
-    <listener-class>com.listener.ContextLoaderListenerExtend</listener-class>
+    <listener-class>com.springmvcxml.listener.ContextLoaderListenerExtend</listener-class>
   </listener>
   <!--启动spring容器 end-->
 
@@ -19,7 +19,7 @@
 
   <filter>
     <filter-name>myfilter</filter-name>
-    <filter-class>com.filter.MyFilter</filter-class>
+    <filter-class>com.springmvcxml.filter.MyFilter</filter-class>
     <init-param>
       <param-name>userName</param-name>
       <param-value>wjb</param-value>
@@ -37,7 +37,7 @@
   <!--DispatcherServlet上下文在初始化的时候会建立自己的IoC上下文，用以持有spring mvc相关的bean-->
   <servlet>
     <servlet-name>mvc</servlet-name>
-    <servlet-class>com.dispatcher.DispatcherServletExtend</servlet-class>
+    <servlet-class>com.springmvcxml.dispatcher.DispatcherServletExtend</servlet-class>
     <init-param>
       <param-name>contextConfigLocation</param-name>
       <param-value>classpath:spring-mvc.xml</param-value>

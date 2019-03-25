@@ -1,6 +1,5 @@
-package com.filter;
+package com.springmvcxml.filter;
 
-import com.listener.ServletContextListenerExtend;
 import org.apache.log4j.Logger;
 
 import javax.servlet.*;

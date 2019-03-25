@@ -1,0 +1,148 @@
+1、Spring EL 和 资源调用
+Spring E ：表达式语言，简称SpEL；能够在运行时构建复杂表达式，存取对象属性、对象方法调用等。
+使用方式 ： SpEL都支持XML和Annotation两种方式，格式：#{ SpEL expression }
+注解方式：@Value
+①、注入普通字符串
+②、注入操作系统属性
+③、注入表达式结果
+④、注入其他bean属性
+⑤、注入文件资源：需要配置一个 PropertySourcesPlaceholderConfigurer 的Bean，使用 @Value("${}")，用的是$ 而不是 #；注入Properties还可以从Environment中获取
+⑥、注入网址资源
+⑦、注入配置文件
+
+==================================
+
+2、bean的初始化和销毁
+初始化：即Bean在使用之前或之后做些必要的操作
+①、配置方式：
+xml：init-method destory-method
+@Bean ： initMethod destroyMethod
+
+②、注解方式：利用JSR-250
+@Postconstruct @PreDestroy
+
+bean实例化 ---》bean初始化
+
+=========================================
+
+3、Spring中的Profile
+
+3.1、Spring中的Profile 是什么?
+
+Spring中的Profile功能其实早在Spring 3.1的版本就已经出来，它可以理解为我们在Spring容器中所定义的Bean的逻辑组名称。
+只有当这些Profile被激活的时候，才会将Profile中所对应的Bean注册到Spring容器中。
+举个更具体的例子，我们以前所定义的Bean，当Spring容器一启动的时候，就会一股脑的全部加载这些信息完成对Bean的创建；
+而使用了Profile之后，它会将Bean的定义进行更细粒度的划分，将这些定义的Bean划分为几个不同的组，
+当Spring容器加载配置信息的时候，首先查找激活的Profile，然后只会去加载被激活的组中所定义的Bean信息，
+而不被激活的Profile中所定义的Bean定义信息是不会加载用于创建Bean的
+
+3.2、为什么要使用Profile
+
+由于我们平时在开发中，通常会出现在开发的时候使用一个开发数据库，测试的时候使用一个测试的数据库，而实际部署的时候需要一个数据库。
+以前的做法是将这些信息写在一个配置文件中，当我把代码部署到测试的环境中，将配置文件改成测试环境；
+当测试完成，项目需要部署到现网了，又要将配置信息改成现网的，真的好烦。。。而
+使用了Profile之后，我们就可以分别定义3个配置文件，一个用于开发、一个用户测试、一个用户生产，其分别对应于3个Profile。
+当在实际运行的时候，只需给定一个参数来激活对应的Profile即可，那么容器就会只加载激活后的配置文件，这样就可以大大省去我们修改配置信息而带来的烦恼
+
+3.3、配置Spring profile
+
+====================================
+
+4、Maven profile配置
+
+Maven的profile用于在打包时根据指定环境替换不同环境的配置文件配置，如数据库配置
+
+=======================================
+
+5、spring事件
+spring事件为bean与bean之间的消息通信提供支持。
+
+spring 的事件需要遵循如下流程：
+自定义事件：需要extends ApplicationEvent
+定义事件监听器：实现 ApplicationListenner
+使用容器发布
+
+========================================
+
+6、springmvc 注解模式
+
+在servlet2.5及以下的时候，要实现spring mvc需要再web.xml中配置<servlet>元素。
+在servlet3.0，可实现注解模式，实现mvc，需要实现WebApplicationIntiializer接口，实现该接口，等同于web.xml配置
+
+**常用注解**
+@EnableWebMvc：开启对spring mvc 的配置支持；该注解会开启一些默认配置，如ViewResolver、MessageConverter
+
+@RequestMapping 支持servlet的request和response作为参数，也支持对request和response的媒介类型进行配置
+    @RequestMapping(produces="text/plaint;charset=utf-8"):produces可定制返回的response的媒体类型和字符集
+
+@ResponseBody ：支持将返回值放在response体内，而不是返回一个页面
+
+@RequestBody ：此注解放在参数前。允许request的参数在request体中，而不是在链接后面
+
+@PathVariable ：用来接收路径参数；此注解放在参数前
+
+@RestController : 是一个组合注解，组合@Controller 和 ResponseBody
+
+===========================================
+
+7、spring mvc的定制配置
+
+spring mvc定制配置需要配置类继承 WebMvcConfigurerAdapter，并使用@EnableWebMvc来开启对spring mvc的配置支持，这样我们就可以重写这个类的方法，完成我们的常用配置
+
+*** 静态资源配置 ***
+
+重写 【WebMvcConfigurerAdapter】--> addResourceHandlers 方法
+    addResourceLocations：指定静态文件放置的目录
+    addResourceHandler： 指定对外暴露的访问路径
+
+**** 拦截器配置 *****
+
+可以让普通的Bean实现 HanderInterceptor 接口或继承 HandlerInterceptorAdapter 类来实现自定义拦截器；
+通过重写 【WebMvcConfigurerAdapter】--> addInterceptors 方法来注册自定义拦截器
+
+
+*** @ControllerAdvice ****
+
+该注解可以将对控制器（即@Controller注解的类）的全局配置放在同一个位置；可以使用 @ExceptionHandler/@InitBinder/@ModerAttribute 注解，这对所有注解了 @RequestMapping 的控制器内的方法有效
+    @ExceptionHandler：用于全局处理控制器的异常信息
+    @InitBinder：用来设置WebDataBinder，自动绑定前台请求参数到model中
+    @ModerAttribute：该注解本来的作用是用于绑定键值对到model中，此处是让全局的 @RequestMapping 都能获取到此处设置的键值对
+
+
+*** 其他配置 ****
+快捷的viewController
+    可以重写 【WebMvcConfigurerAdapter】--> addViewControllers
+
+路径参数配置：在spring mvc中，路径参数如果带"."的话，"."后面的值会被忽略
+    可以通过重写 【WebMvcConfigurerAdapter】--> configurePathMath 方法来不忽略"."后面的参数值
+
+============================================
+
+8、spring mvc的高级配置
+
+*** 文件上传 **
+spring mvc通过配置一个 MultipartResolver 来实现文件上传
+通过 MultipartFile[] 来接收文件
+
+
+*** 自定义 HttpMessageConverter，并注册到 Spring mvc ***
+HttpMessageConverters 是用来处理request 和response里面的数据的。spring 为我们提供了内置的大量的 HttpMessageConverter.
+
+    继承 AbstractHttpMessageConverter 接口来实现自定义的 HttpMessageConverter
+
+    注册到spring mvc：
+            configureMessageConverter：重载会覆盖mvc默认注册的多个 HttpMessageConverter
+            extendMessageConverter：仅添加一个 HttpMessageConverter ，不会覆盖
+
+
+
+*** 服务器端推送技术 ***
+早期的解决方案是使用ajax去轮询。
+现在的方案是，当客户端向服务器发送请求，服务器会抓住这个请求不放，登有数据更新的时候才返回给客户端；当客户端接收到消息后，再向服务器发送请求，周而复始。
+该技术是基于SSE(Server Send Event 服务端发送事件)的服务端推送 和 servlet3.0+异步方法特性，第一种方法需要浏览器的支持，第二种方法是跨浏览器的
+
+    SSE:
+        @RequestMapping(produces = "text/event-stream")：这里输出的媒体类型为 text/event-stream ,这是服务端SSE的支持
+
+    Servlet3.0+异步处理：
+        开启异步方法支持
